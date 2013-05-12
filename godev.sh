@@ -128,9 +128,28 @@ _godev_add() {
         echo "Error: 'godev add' can only be used during an active godev session" >&2
         return 1
     fi
-    for src_dir in $@
+    # try to parse any optional flag
+    prefix=$GODEV_DIR/src
+    startidx=1
+    while getopts "p:" OPT "$@"
     do
-        ln -s `realpath $src_dir` $GODEV_DIR/src/`basename $src_dir`
+        case $OPT in
+            # GODEV_DIR prefix
+            p)
+                prefix=$GODEV_DIR/src/$OPTARG
+                # create GODEV_DIR prefix if it doesn't exist
+                if [ ! -d "$prefix" ]; then
+                    mkdir -p $prefix
+                fi
+                # increase $@ start index
+                startidx=3
+                ;;
+        esac
+    done
+
+    for src_dir in ${@:startidx}
+    do
+        ln -s `realpath $src_dir` $prefix/`basename $src_dir`
     done
 }
 
