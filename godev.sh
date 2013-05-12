@@ -29,10 +29,10 @@ cat << EOF
 Usage: godev {add,cd,help,rm,start,stop,version}
 
 Subcommands:
-    add      Symlinks the given directory into active development directory
-    cd       Change working directory to active development directory
+    add      Symlinks the given directory into active workspace
+    cd       Change working directory to active workspace
     help     Show this help message
-    rm       Removes the given development directory
+    rm       Removes the given workspace
     start    Starts a new GOPATH environment
     stop     Revert to the default system GOPATH
     version  Show version
@@ -56,7 +56,7 @@ _godev_stop() {
     fi
 }
 
-# _godev_start sets up an active development directory
+# _godev_start sets up an active workspace
 _godev_start() {
     if [ -z "$GODEV_ROOT" ]; then
         echo "Error: GODEV_ROOT environment variable not set. Exiting." >&2
@@ -123,7 +123,7 @@ _godev_start() {
 }
 
 # _godev_add symlinks the given source directories into the src directory in the
-# active development directory
+# active workspace
 _godev_add() {
     if [ -z $GODEV_ACTIVE ]; then
         echo "Error: 'godev add' can only be used during an active godev session" >&2
@@ -154,7 +154,7 @@ _godev_add() {
     done
 }
 
-# _godev_cd cds into the active development directory
+# _godev_cd cds into the active workspace
 _godev_cd() {
     if [ -z $GODEV_ACTIVE ]; then
         echo "Error: 'godev cd' can only be used during an active godev session" >&2
