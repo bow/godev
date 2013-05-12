@@ -26,12 +26,13 @@ export GODEV_VERSION=0.1.dev
 
 _godev_help() {
 cat << EOF
-Usage: godev {add,cd,help,start,stop,version}
+Usage: godev {add,cd,help,rm,start,stop,version}
 
 Subcommands:
     add      Symlinks the given directory into active development directory
     cd       Change working directory to active development directory
     help     Show this help message
+    rm       Removes the given development directory
     start    Starts a new GOPATH environment
     stop     Revert to the default system GOPATH
     version  Show version
@@ -162,6 +163,28 @@ _godev_cd() {
     cd $GODEV_DIR
 }
 
+# _godev_rm removes the given GODEV workspaces
+_godev_rm() {
+    if [ "${#@}" -eq 0 ]; then
+        echo "Please supply the name(s) of workspace(s) to remove." >&2
+        return 1
+    fi
+
+    for wp in $@
+    do
+        wp_dir=$GODEV_ROOT/$wp
+        if [ "$GODEV_NAME" = "$wp" ]; then
+            echo "Error: cannot remove active workspace '$wp'. Please supply other name(s)." >&2
+            return 1
+        fi
+        if [ ! -d $wp_dir ]; then
+            echo "Error: cannot remove workspace '$wp'. No such workspace found." >&2
+            return 1
+        fi
+        rm -rf $wp_dir
+    done
+}
+
 godev() {
     subcmd=$1
     shift
@@ -172,6 +195,8 @@ godev() {
             _godev_cd $@ || return 1 ;;
         help | "--help" | "-help" | "-h" | "")
             _godev_help || return 1 ;;
+        rm)
+            _godev_rm $@ || return 1;;
         start)
             _godev_start $@ || return 1 ;;
         stop)
